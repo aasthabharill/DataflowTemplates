@@ -109,6 +109,10 @@ public class InputRecordProcessor {
               .build();
 
       DMLGeneratorResponse dmlGeneratorResponse = dmlGenerator.getDMLStatement(dmlGeneratorRequest);
+      LOG.info(
+          "InputRecordProcessor generated DML: '{}', isEmpty: {}",
+          dmlGeneratorResponse.getDmlStatement(),
+          dmlGeneratorResponse.getDmlStatement().isEmpty());
       if (dmlGeneratorResponse.getDmlStatement().isEmpty()) {
         LOG.warn("DML statement is empty for table: " + tableName);
         return false;

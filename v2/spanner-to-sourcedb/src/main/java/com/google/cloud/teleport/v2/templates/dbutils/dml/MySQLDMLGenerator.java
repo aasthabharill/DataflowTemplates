@@ -42,6 +42,7 @@ public class MySQLDMLGenerator implements IDMLGenerator {
   private static final Logger LOG = LoggerFactory.getLogger(MySQLDMLGenerator.class);
 
   public DMLGeneratorResponse getDMLStatement(DMLGeneratorRequest dmlGeneratorRequest) {
+    LOG.info("MySQLDMLGenerator.getDMLStatement received request: " + dmlGeneratorRequest);
     if (dmlGeneratorRequest == null) {
       LOG.warn("DMLGeneratorRequest is null. Cannot process the request.");
       return new DMLGeneratorResponse("");
@@ -244,6 +245,7 @@ public class MySQLDMLGenerator implements IDMLGenerator {
       if (spannerColDef == null) {
         continue;
       }
+      // value extraction
       String columnValue = "";
       if (keyValuesJson.has(spannerColumnName)) {
         // get the value based on Spanner and Source type
@@ -392,6 +394,15 @@ public class MySQLDMLGenerator implements IDMLGenerator {
     String response =
         getColumnValueByType(
             sourceColDef.type(), colInputValue, sourceDbTimezoneOffset, colType.toString());
+    LOG.info(
+        "MySQLDMLGenerator.getMappedColumnValue for spanner col {} ({}) and source col {} ({}) with"
+            + " input val {} produced response: {}",
+        spannerColDef.name(),
+        spannerColDef.typeString(),
+        sourceColDef.name(),
+        sourceColDef.type(),
+        colInputValue,
+        response);
     return response;
   }
 
@@ -487,6 +498,13 @@ public class MySQLDMLGenerator implements IDMLGenerator {
       default:
         response = colValue;
     }
+    LOG.info(
+        "MySQLDMLGenerator.getColumnValueByType for columnType {} with colValue {} and"
+            + " spannerColType {} produced response: {}",
+        columnType,
+        colValue,
+        spannerColType,
+        response);
     return response;
   }
 
@@ -498,6 +516,10 @@ public class MySQLDMLGenerator implements IDMLGenerator {
   }
 
   private static String getQuotedEscapedString(String input, String spannerColType) {
+    LOG.info(
+        "MySQLDMLGenerator.getQuotedEscapedString received input: {} with spannerColType: {}",
+        input,
+        spannerColType);
     if ("BYTES".equals(spannerColType)) {
       return input;
     }
@@ -507,6 +529,10 @@ public class MySQLDMLGenerator implements IDMLGenerator {
   }
 
   private static String getBinaryString(String input, String spannerColType) {
+    LOG.info(
+        "MySQLDMLGenerator.getBinaryString received input: {} with spannerColType: {}",
+        input,
+        spannerColType);
     String response = "BINARY(" + getQuotedEscapedString(input, spannerColType) + ")";
     return response;
   }

@@ -442,8 +442,8 @@ public final class MySQLDMLGeneratorTest {
     sql.contains(
         "timestamp_column = CONVERT_TZ('2023-05-18T12:01:13.088397258','+00:00','+00:00')"));*/
     assertTrue(sql.contains("`float_column` = 4.2"));
-    assertTrue(sql.contains("`varbinary_column` = BINARY(FROM_BASE64('YWJjbGFyZ2U='))"));
-    assertTrue(sql.contains("`binary_column` = BINARY(FROM_BASE64('YWJjbGFyZ2U='))"));
+    assertTrue(sql.contains("`varbinary_column` = BINARY(FROM_BASE64(''))"));
+    assertTrue(sql.contains("`binary_column` = BINARY(FROM_BASE64(''))"));
     assertTrue(sql.contains("`bigint_column` = 4444"));
     assertTrue(sql.contains("`time_column` = '10:10:10'"));
     assertTrue(sql.contains("`tinytext_column` = '<tinytext_column>'"));

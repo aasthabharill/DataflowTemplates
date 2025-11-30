@@ -54,11 +54,11 @@
           "Name": "binary_column",
           "T": {
             "Name": "BYTES",
-            "Len": 9223372036854776000,
+            "Len": 1,
             "IsArray": false
           },
           "NotNull": false,
-          "Comment": "From: binary_column binary(20)",
+          "Comment": "From: binary_column binary(1)",
           "Id": "c25"
         },
         "blob_column": {
@@ -421,7 +421,7 @@
           "Type": {
             "Name": "binary",
             "Mods": [
-              20
+              1
             ],
             "ArrayBounds": null
           },

@@ -182,6 +182,7 @@ public class SourceWriterFn extends DoFn<KV<Long, TrimmedShardedDataChangeRecord
   public void processElement(ProcessContext c) {
     KV<Long, TrimmedShardedDataChangeRecord> element = c.element();
     TrimmedShardedDataChangeRecord spannerRec = element.getValue();
+    LOG.info("SourceWriterFn received a record: {}", gson.toJson(spannerRec));
     String shardId = spannerRec.getShard();
     if (shardId == null) {
       // no shard found, move to permanent error
@@ -257,6 +258,9 @@ public class SourceWriterFn extends DoFn<KV<Long, TrimmedShardedDataChangeRecord
                                 spannerToSourceTransformer,
                                 this.source,
                                 check);
+                        LOG.info(
+                            "SourceWriterFn: InputRecordProcessor.processRecord returned isEventFiltered: {}",
+                            isEventFiltered);
                         if (isEventFiltered) {
                           outputWithTag(
                               c,
