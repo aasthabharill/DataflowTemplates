@@ -262,11 +262,12 @@ public class SourceWriterFn extends DoFn<KV<Long, TrimmedShardedDataChangeRecord
                               && shadowTableRecord.getRecordSequence()
                                   == Long.parseLong(spannerRec.getRecordSequence())) {
                             LOG.info(
-                                "Duplicate record detected. Shadow Table: [{}, {}], Record: [{}, {}]",
+                                "aastha Duplicate record detected. Shadow Table: [{}, {}], Record: [{}, {}], ServerTxnId: {}",
                                 shadowTableRecord.getProcessedCommitTimestamp(),
                                 shadowTableRecord.getRecordSequence(),
                                 spannerRec.getCommitTimestamp(),
-                                spannerRec.getRecordSequence());
+                                spannerRec.getRecordSequence(),
+                                spannerRec.getServerTransactionId());
                           }
 
                           if (!isSourceAhead) {
@@ -299,6 +300,13 @@ public class SourceWriterFn extends DoFn<KV<Long, TrimmedShardedDataChangeRecord
                                     this.source,
                                     check);
                             isRecordWritten[0] = !isEventFiltered;
+                            if (isRecordWritten[0]) {
+                              LOG.info(
+                                  "aastha Record written to source. ID: {}, TxnId: {}, Seq: {}",
+                                  primaryKey,
+                                  spannerRec.getServerTransactionId(),
+                                  spannerRec.getRecordSequence());
+                            }
                             if (isEventFiltered) {
                               outputWithTag(
                                   c,
@@ -324,6 +332,11 @@ public class SourceWriterFn extends DoFn<KV<Long, TrimmedShardedDataChangeRecord
           Counter recordsWrittenToSource =
               Metrics.counter(shardId, "records_written_to_source_" + shardId);
           recordsWrittenToSource.inc(1);
+          LOG.info(
+              "aastha Transaction committed. Shadow Table Updated. ID: {}, TxnId: {}, Seq: {}",
+              primaryKey,
+              spannerRec.getServerTransactionId(),
+              spannerRec.getRecordSequence());
           Distribution lagMetric =
               Metrics.distribution(shardId, "replication_lag_in_seconds_" + shardId);
           Instant instTime = Instant.now();
@@ -340,6 +353,11 @@ public class SourceWriterFn extends DoFn<KV<Long, TrimmedShardedDataChangeRecord
         // wrapped inside a SpannerException.
         // We need to get and inspect the cause while handling the exception.
         SUCCESSFUL_WRITE_LATENCY_MS.update(timer.elapsed(TimeUnit.MILLISECONDS));
+        LOG.info(
+            "aastha Finished processing element. ID: {}, TxnId: {}, Seq: {}",
+            primaryKey,
+            spannerRec.getServerTransactionId(),
+            spannerRec.getRecordSequence());
       } catch (Exception ex) {
         Throwable cause = ex.getCause();
         String message = ex.getMessage();
